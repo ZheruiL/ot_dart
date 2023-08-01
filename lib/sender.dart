@@ -5,14 +5,14 @@ class Sender extends StatefulWidget {
     super.key,
     required this.name,
     required this.controller,
-    required this.onSent,
-    required this.onReceived,
+    this.onSent,
+    this.onReceived,
   });
 
   final String name;
   final TextEditingController controller;
-  final Function() onSent;
-  final Function() onReceived;
+  final Function()? onSent;
+  final Function()? onReceived;
 
   @override
   State<Sender> createState() => _SenderState();

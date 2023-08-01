@@ -33,7 +33,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   static const usernameAlice = 'alice';
   static const usernameBob = 'bob';
-  List<Command> _commands = [];
+  final List<Command> _commands = [];
   String _documentText = '';
   final _controllerAlice = TextEditingController();
   String _lastValueAlice = '';
@@ -107,6 +107,21 @@ class _MyHomePageState extends State<MyHomePage> {
     _controllerBob.dispose();
   }
 
+  void handleCmd(Command cmd) {
+    _commands.add(cmd);
+    final pos = cmd.pos;
+    switch (cmd.type) {
+      case CommandType.insert:
+        _documentText = (_documentText.substring(0, pos) +
+            cmd.content +
+            _documentText.substring(pos, _documentText.length));
+      case CommandType.delete:
+        _documentText = _documentText.substring(0, pos) +
+            _documentText.substring(pos + cmd.length, _documentText.length);
+    }
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -177,13 +192,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: Sender(
                       name: 'Alice',
                       controller: _controllerAlice,
-                      onSent: () {
-                        // todo 并且收到服务器的ack
-                        if (_bufferedCommandsAlice.isNotEmpty) {
-                          _commands.add(_bufferedCommandsAlice.removeAt(0));
-                          setState(() {});
-                        }
-                      },
+                      onSent: _bufferedCommandsAlice.isEmpty // todo 并且收到服务器的ack
+                          ? null
+                          : () => handleCmd(_bufferedCommandsAlice.removeAt(0)),
                       onReceived: () {},
                     ),
                   ),
@@ -193,12 +204,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: Sender(
                       name: 'Bob',
                       controller: _controllerBob,
-                      onSent: () {
-                        if (_bufferedCommandsBob.isNotEmpty) {
-                          _commands.add(_bufferedCommandsBob.removeAt(0));
-                          setState(() {});
-                        }
-                      },
+                      onSent: _bufferedCommandsBob.isEmpty // todo 并且收到服务器的ack
+                          ? null
+                          : () => handleCmd(_bufferedCommandsBob.removeAt(0)),
                       onReceived: () {},
                     ),
                   ),
