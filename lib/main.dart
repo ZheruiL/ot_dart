@@ -14,7 +14,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter OT demo',
       theme: ThemeData(useMaterial3: true),
-      home: const MyHomePage(title: 'OT demo'),
+      home: const MyHomePage(
+        title: 'Visualization of OT with a central server using flutter',
+      ),
     );
   }
 }
@@ -29,24 +31,21 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final usernameAlice = 'alice';
-  final usernameBob = 'bob';
+  static const usernameAlice = 'alice';
+  static const usernameBob = 'bob';
   List<Command> _commands = [];
   String _documentText = '';
   final _controllerAlice = TextEditingController();
   String _lastValueAlice = '';
+  final List<Command> _bufferedCommandsAlice = [];
   final _controllerBob = TextEditingController();
   String _lastValueBob = '';
+  final List<Command> _bufferedCommandsBob = [];
 
   @override
   void initState() {
     super.initState();
-    handleListener(
-      TextEditingController controller,
-      String lastValue,
-      String username,
-      Function(String v) cb,
-    ) {
+    handleListener(TextEditingController controller, String lastValue, String username) {
       final currPos = controller.selection.start;
       debugPrint('currPos $currPos');
       // 不是用户输入的修改
@@ -55,31 +54,49 @@ class _MyHomePageState extends State<MyHomePage> {
         return;
       }
       final length = currVal.length - lastValue.length;
+      late final Command command;
       if (length > 0) {
         // add value
         String addedValue = currVal.substring(currPos - length, currPos);
         final pos = currPos - length;
         debugPrint('insert pos: $pos, v: $addedValue');
-        _commands.add(Command(username, CommandType.insert, pos,
-            content: addedValue, length: length));
+        command = Command(
+          username,
+          CommandType.insert,
+          pos,
+          content: addedValue,
+          length: length,
+        );
       } else if (currVal.length < lastValue.length) {
         // delete value
         debugPrint('delete pos: $currPos, length: ${-length}');
-        _commands.add(Command(username, CommandType.delete, currPos, length: -length));
+        command = Command(
+          username,
+          CommandType.delete,
+          currPos,
+          length: -length,
+        );
       }
-      cb(currVal);
+      switch (username) {
+        case usernameAlice:
+          _lastValueAlice = currVal;
+          _bufferedCommandsAlice.add(command);
+          break;
+        case usernameBob:
+          _lastValueBob = currVal;
+          _bufferedCommandsBob.add(command);
+          break;
+        default:
+          throw Exception('unknown user');
+      }
       setState(() {});
     }
 
     _controllerAlice.addListener(() {
-      handleListener(_controllerAlice, _lastValueAlice, usernameAlice, (v) {
-        _lastValueAlice = v;
-      });
+      handleListener(_controllerAlice, _lastValueAlice, usernameAlice);
     });
     _controllerBob.addListener(() {
-      handleListener(_controllerBob, _lastValueBob, usernameBob, (v) {
-        _lastValueBob = v;
-      });
+      handleListener(_controllerBob, _lastValueBob, usernameBob);
     });
   }
 
@@ -94,7 +111,6 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
       body: SingleChildScrollView(
@@ -161,7 +177,13 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: Sender(
                       name: 'Alice',
                       controller: _controllerAlice,
-                      onSent: () {},
+                      onSent: () {
+                        // todo 并且收到服务器的ack
+                        if (_bufferedCommandsAlice.isNotEmpty) {
+                          _commands.add(_bufferedCommandsAlice.removeAt(0));
+                          setState(() {});
+                        }
+                      },
                       onReceived: () {},
                     ),
                   ),
@@ -171,7 +193,12 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: Sender(
                       name: 'Bob',
                       controller: _controllerBob,
-                      onSent: () {},
+                      onSent: () {
+                        if (_bufferedCommandsBob.isNotEmpty) {
+                          _commands.add(_bufferedCommandsBob.removeAt(0));
+                          setState(() {});
+                        }
+                      },
                       onReceived: () {},
                     ),
                   ),
