@@ -31,8 +31,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  static const usernameAlice = 'alice';
-  static const usernameBob = 'bob';
+  static const _usernameAlice = 'Alice';
+  static const _usernameBob = 'Bob';
   final List<Command> _commands = [];
   String _documentText = '';
   final _controllerAlice = TextEditingController();
@@ -78,11 +78,11 @@ class _MyHomePageState extends State<MyHomePage> {
         );
       }
       switch (username) {
-        case usernameAlice:
+        case _usernameAlice:
           _lastValueAlice = currVal;
           _bufferedCommandsAlice.add(command);
           break;
-        case usernameBob:
+        case _usernameBob:
           _lastValueBob = currVal;
           _bufferedCommandsBob.add(command);
           break;
@@ -93,10 +93,10 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     _controllerAlice.addListener(() {
-      handleListener(_controllerAlice, _lastValueAlice, usernameAlice);
+      handleListener(_controllerAlice, _lastValueAlice, _usernameAlice);
     });
     _controllerBob.addListener(() {
-      handleListener(_controllerBob, _lastValueBob, usernameBob);
+      handleListener(_controllerBob, _lastValueBob, _usernameBob);
     });
   }
 
@@ -166,7 +166,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                             height: 24,
                                             decoration: BoxDecoration(
                                               shape: BoxShape.circle,
-                                              color: command.username == usernameAlice
+                                              color: command.username == _usernameAlice
                                                   ? Colors.blue
                                                   : Colors.red,
                                             ),
@@ -190,7 +190,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   Expanded(
                     flex: 1,
                     child: Sender(
-                      name: 'Alice',
+                      name: _usernameAlice,
                       controller: _controllerAlice,
                       onSent: _bufferedCommandsAlice.isEmpty // todo 并且收到服务器的ack
                           ? null
@@ -202,7 +202,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   Expanded(
                     flex: 1,
                     child: Sender(
-                      name: 'Bob',
+                      name: _usernameBob,
                       controller: _controllerBob,
                       onSent: _bufferedCommandsBob.isEmpty // todo 并且收到服务器的ack
                           ? null
