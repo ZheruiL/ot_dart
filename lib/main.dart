@@ -33,8 +33,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  static const _usernameAlice = 'Alice';
-  static const _usernameBob = 'Bob';
   late final Client _clientAlice;
   late final Client _clientBob;
   final _controllerAlice = TextEditingController();
@@ -43,8 +41,8 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    _clientAlice = LocalClient(_usernameAlice, '', _controllerAlice);
-    _clientBob = LocalClient(_usernameBob, '', _controllerBob);
+    _clientAlice = LocalClient('Alice', '', _controllerAlice, Colors.blue);
+    _clientBob = LocalClient('Bob', '', _controllerBob, Colors.red);
     _clientAlice.connect();
     _clientBob.connect();
   }
@@ -105,10 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                 height: 24,
                                                 decoration: BoxDecoration(
                                                   shape: BoxShape.circle,
-                                                  color:
-                                                      command.username == _usernameAlice
-                                                          ? Colors.blue
-                                                          : Colors.red,
+                                                  color: command.client.color,
                                                 ),
                                               ),
                                             ),

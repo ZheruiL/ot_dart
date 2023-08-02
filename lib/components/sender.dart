@@ -43,15 +43,37 @@ class _SenderState extends State<Sender> {
                         icon: const Icon(Icons.arrow_upward),
                       ),
                     ),
-                    const SizedBox(
-                      height: 64,
+                    SizedBox(
+                      height: 80,
+                      width: 40,
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            for (final command in widget.client.sentCommands) ...[
+                              Tooltip(
+                                message: command.toString(),
+                                child: Container(
+                                  width: 16,
+                                  height: 16,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: command.client.color,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                            ]
+                          ],
+                        ),
+                      ),
                     ),
                   ],
                 ),
                 Column(
                   children: [
                     const SizedBox(
-                      height: 64,
+                      width: 24,
+                      height: 80,
                       child: Column(),
                     ),
                     Tooltip(
@@ -62,7 +84,8 @@ class _SenderState extends State<Sender> {
                             : () {
                                 if (widget.client.receivedCommands.isEmpty) {
                                   debugPrint(
-                                      'client does not have any commands to receive');
+                                    'client does not have any commands to receive',
+                                  );
                                   return;
                                 }
                               },

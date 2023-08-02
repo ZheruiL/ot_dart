@@ -1,3 +1,5 @@
+import 'abstracts/client.dart';
+
 enum CommandType {
   insert,
   delete,
@@ -5,14 +7,14 @@ enum CommandType {
 
 class Command {
   Command(
-    this.username,
+    this.client,
     this.type,
     this.pos, {
     this.content = '',
     this.length = 0,
   });
 
-  String username;
+  Client client;
   CommandType type;
   int pos;
   String content = '';

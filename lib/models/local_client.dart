@@ -5,7 +5,7 @@ import 'package:ot_dart/models/command.dart';
 import 'package:ot_dart/models/local_server.dart';
 
 class LocalClient extends Client {
-  LocalClient(super.username, super.currVal, super.controller);
+  LocalClient(super.username, super.currVal, super.controller, super.color);
 
   // final Completer<Command> completer = Completer();
 

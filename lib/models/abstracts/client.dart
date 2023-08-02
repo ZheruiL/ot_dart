@@ -8,8 +8,9 @@ abstract class Client with ChangeNotifier {
   final List<Command> receivedCommands = []; // 已收到的消息
   final TextEditingController controller;
   bool connected = false;
+  Color color;
 
-  Client(this.username, this.val, this.controller) {
+  Client(this.username, this.val, this.controller, this.color) {
     init();
   }
 
@@ -30,7 +31,7 @@ abstract class Client with ChangeNotifier {
         final pos = currPos - length;
         debugPrint('insert pos: $pos, v: $addedValue');
         command = Command(
-          username,
+          this,
           CommandType.insert,
           pos,
           content: addedValue,
@@ -40,7 +41,7 @@ abstract class Client with ChangeNotifier {
         // delete value
         debugPrint('delete pos: $currPos, length: ${-length}');
         command = Command(
-          username,
+          this,
           CommandType.delete,
           currPos,
           length: -length,
