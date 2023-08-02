@@ -7,6 +7,7 @@ abstract class Client with ChangeNotifier {
   final List<Command> sentCommands = []; // 已发送的消息
   final List<Command> receivedCommands = []; // 已收到的消息
   final TextEditingController controller;
+  bool connected = false;
 
   Client(this.username, this.val, this.controller) {
     init();

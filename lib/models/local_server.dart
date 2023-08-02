@@ -23,6 +23,7 @@ class LocalServer with ChangeNotifier {
 
   registerClient(LocalClient client) {
     clients.add(client);
+    client.connected = true;
   }
 
   // 向服务器发送消息
