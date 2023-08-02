@@ -27,4 +27,13 @@ class Command {
         return 'Delete(pos=$pos, length=$length)';
     }
   }
+
+  String handleText(String text) {
+    switch (type) {
+      case CommandType.insert:
+        return (text.substring(0, pos) + content + text.substring(pos, text.length));
+      case CommandType.delete:
+        return text.substring(0, pos) + text.substring(pos + length, text.length);
+    }
+  }
 }

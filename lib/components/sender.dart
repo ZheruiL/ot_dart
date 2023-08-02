@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 class Sender extends StatefulWidget {
   const Sender({
     super.key,
+    required this.enabled,
     required this.name,
     required this.controller,
     this.onSent,
     this.onReceived,
   });
 
+  final bool enabled;
   final String name;
   final TextEditingController controller;
   final Function()? onSent;
@@ -26,9 +28,12 @@ class _SenderState extends State<Sender> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            IconButton(
-              onPressed: widget.onSent,
-              icon: const Icon(Icons.arrow_upward),
+            Tooltip(
+              message: 'Receive next operation from client',
+              child: IconButton(
+                onPressed: widget.onSent,
+                icon: const Icon(Icons.arrow_upward),
+              ),
             ),
             const SizedBox(width: 64),
           ],
@@ -38,9 +43,12 @@ class _SenderState extends State<Sender> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const SizedBox(width: 64),
-            IconButton(
-              onPressed: widget.onReceived,
-              icon: const Icon(Icons.arrow_downward),
+            Tooltip(
+              message: 'Receive next operation from server',
+              child: IconButton(
+                onPressed: widget.onReceived,
+                icon: const Icon(Icons.arrow_downward),
+              ),
             ),
           ],
         ),
@@ -53,6 +61,7 @@ class _SenderState extends State<Sender> {
                 Text(widget.name),
                 const SizedBox(height: 16),
                 TextFormField(
+                  enabled: widget.enabled,
                   controller: widget.controller,
                   // onChanged: (String v) {
                   //   // Get cursor current position
