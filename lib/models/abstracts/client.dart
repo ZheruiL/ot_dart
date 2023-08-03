@@ -3,6 +3,7 @@ import 'package:ot_dart/models/command.dart';
 
 abstract class Client with ChangeNotifier {
   final String username;
+  int revision = 0; // 当前版本
   String val; // 当前的文本
   final List<Command> sentCommands = []; // 已发送的消息
   final List<Command> receivedCommands = []; // 已收到的消息
@@ -14,6 +15,12 @@ abstract class Client with ChangeNotifier {
     init();
   }
 
+  @override
+  bool operator ==(Object other) => other is Client && other.username == username;
+
+  @override
+  int get hashCode => username.hashCode;
+
   init() {
     controller.addListener(() {
       final currPos = controller.selection.start;
@@ -23,6 +30,7 @@ abstract class Client with ChangeNotifier {
       if (val == currVal) {
         return;
       }
+      revision++;
       final length = currVal.length - val.length;
       late final Command command;
       if (length > 0) {
@@ -33,7 +41,8 @@ abstract class Client with ChangeNotifier {
         command = Command(
           this,
           CommandType.insert,
-          pos,
+          revision,
+          pos: pos,
           content: addedValue,
           length: length,
         );
@@ -43,7 +52,8 @@ abstract class Client with ChangeNotifier {
         command = Command(
           this,
           CommandType.delete,
-          currPos,
+          revision,
+          pos: currPos,
           length: -length,
         );
       }
@@ -51,6 +61,24 @@ abstract class Client with ChangeNotifier {
       sentCommands.add(command);
       notifyListeners();
     });
+  }
+
+  onMessage(Command cmd) {
+    receivedCommands.add(cmd);
+    revision++;
+  }
+
+  receiveCmd() {
+    if (receivedCommands.isEmpty) {
+      debugPrint(
+        'client does not have any commands to receive',
+      );
+      return;
+    }
+    final cmd = receivedCommands.removeAt(0);
+    val = cmd.handleText(controller.text);
+    controller.text = val;
+    notifyListeners();
   }
 
   Future<void> connect();

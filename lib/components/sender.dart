@@ -81,14 +81,7 @@ class _SenderState extends State<Sender> {
                       child: IconButton(
                         onPressed: (widget.client.receivedCommands.isEmpty)
                             ? null
-                            : () {
-                                if (widget.client.receivedCommands.isEmpty) {
-                                  debugPrint(
-                                    'client does not have any commands to receive',
-                                  );
-                                  return;
-                                }
-                              },
+                            : () => widget.client.receiveCmd(),
                         icon: const Icon(Icons.arrow_downward),
                       ),
                     ),
