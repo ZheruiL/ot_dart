@@ -32,13 +32,11 @@ class _SenderState extends State<Sender> {
                         onPressed: widget.client.sentCommands.isEmpty // todo 并且收到服务器的ack
                             ? null
                             : () async {
-                                if (widget.client.sentCommands.isEmpty) {
+                                if (!widget.client.canSend()) {
                                   debugPrint('client does not have any commands to send');
                                   return;
                                 }
-                                await widget.client.writeCmd(
-                                  widget.client.sentCommands.removeAt(0),
-                                );
+                                await widget.client.sendOperations();
                               },
                         icon: const Icon(Icons.arrow_upward),
                       ),
@@ -79,7 +77,7 @@ class _SenderState extends State<Sender> {
                     Tooltip(
                       message: 'Receive next operation from server',
                       child: IconButton(
-                        onPressed: (widget.client.receivedCommands.isEmpty)
+                        onPressed: (!widget.client.canReceive())
                             ? null
                             : () => widget.client.receiveCmd(),
                         icon: const Icon(Icons.arrow_downward),

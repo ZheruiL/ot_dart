@@ -93,17 +93,17 @@ class _MyHomePageState extends State<MyHomePage> {
                                       child: Row(
                                         children: [
                                           const SizedBox(height: 24),
-                                          for (final command
-                                              in LocalServer().commands) ...[
+                                          for (final operationList
+                                              in LocalServer().listOperations) ...[
                                             const SizedBox(width: 8),
                                             Tooltip(
-                                              message: command.toString(),
+                                              message: operationList.toString(),
                                               child: Container(
                                                 width: 24,
                                                 height: 24,
                                                 decoration: BoxDecoration(
                                                   shape: BoxShape.circle,
-                                                  color: command.client.color,
+                                                  color: operationList.client.color,
                                                 ),
                                               ),
                                             ),

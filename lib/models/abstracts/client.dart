@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:ot_dart/models/command.dart';
+import 'package:ot_dart/models/operation_list.dart';
 
 abstract class Client with ChangeNotifier {
   final String username;
   int revision = 0; // 当前版本
   String val; // 当前的文本
-  final List<Command> sentCommands = []; // 已发送的消息
-  final List<Command> receivedCommands = []; // 已收到的消息
+  bool receivedAck = false; // 是否收到了服务器的ack
+  final List<Command> sentCommands = []; // 可以发送给服务器的消息
+  final List<Command> bufferedCommands = []; // 在本地缓存中还不能发送给服务器的消息
+  final List<OperationList> receivedOperationsList = []; // 已收到的消息
   final TextEditingController controller;
   bool connected = false;
   Color color;
@@ -58,33 +61,59 @@ abstract class Client with ChangeNotifier {
         );
       }
       val = currVal;
-      sentCommands.add(command);
+      if (receivedAck) {
+        sentCommands.add(command);
+        receivedAck = false;
+      } else {
+        bufferedCommands.add(command);
+      }
       notifyListeners();
     });
   }
 
-  onMessage(Command cmd) {
-    receivedCommands.add(cmd);
+  onMessage(OperationList operationList) {
+    receivedOperationsList.add(operationList);
     revision++;
   }
 
   receiveCmd() {
-    if (receivedCommands.isEmpty) {
+    if (receivedOperationsList.isEmpty) {
       debugPrint(
         'client does not have any commands to receive',
       );
       return;
     }
-    final cmd = receivedCommands.removeAt(0);
-    val = cmd.handleText(controller.text);
-    controller.text = val;
+    receivedAck = true;
+    sentCommands.addAll(bufferedCommands);
+    bufferedCommands.clear();
+    final operationList = receivedOperationsList.removeAt(0);
+    for (final op in operationList.operations) {
+      val = op.handleText(controller.text);
+      controller.text = val;
+    }
     notifyListeners();
   }
 
   Future<void> connect();
 
-  // 发送信息给服务器
-  Future<void> writeCmd(Command cmd);
+  // 是否可以发送
+  bool canSend() {
+    return sentCommands.isNotEmpty;
+  }
+
+  // 是否可以接收
+  bool canReceive() {
+    return receivedOperationsList.isNotEmpty;
+  }
+
+  // 按确认发送
+  Future<void> sendOperations() async {
+    await writeOperations(sentCommands);
+    sentCommands.clear();
+  }
+
+  // 发送信息给服务器 (通信曾)
+  Future<void> writeOperations(List<Command> operations);
 
 // 读取服务器发来的消息
 // Future<Command> readCmd();

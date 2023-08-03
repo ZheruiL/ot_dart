@@ -3,11 +3,10 @@ import 'dart:async';
 import 'package:ot_dart/models/abstracts/client.dart';
 import 'package:ot_dart/models/command.dart';
 import 'package:ot_dart/models/local_server.dart';
+import 'package:ot_dart/models/operation_list.dart';
 
 class LocalClient extends Client {
   LocalClient(super.username, super.currVal, super.controller, super.color);
-
-  // final Completer<Command> completer = Completer();
 
   @override
   Future<void> connect() async {
@@ -20,9 +19,10 @@ class LocalClient extends Client {
   //   return commands.removeAt(0);
   // }
 
+  // 通信层
   @override
-  Future<void> writeCmd(Command cmd) async {
-    await LocalServer().writeCmd(cmd);
-    // _completer.complete(cmd);
+  Future<void> writeOperations(List<Command> operations) async {
+    final operationList = OperationList(operations, this);
+    await LocalServer().writeOperations(operationList);
   }
 }
