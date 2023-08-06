@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:ot_dart/models/command.dart';
 import 'package:ot_dart/models/local_client.dart';
 import 'package:ot_dart/models/operation_list.dart';
@@ -19,7 +20,7 @@ class LocalServer with ChangeNotifier {
   void init() {}
 
   final List<LocalClient> clients = []; // 已连接的用户
-  final List<OperationList> listOperations = []; // 已收到的消息
+  final List<OperationList> operationLists = []; // 已收到的消息
   String documentText = ''; // 服务器当前的text
   int revision = 0; // 服务器当前文本版本
 
@@ -33,7 +34,7 @@ class LocalServer with ChangeNotifier {
   // 向服务器发送消息
   Future<void> writeOperations(OperationList operationList) async {
     // 服务器处理消息, 处理完成后发送给客户
-    listOperations.add(operationList);
+    operationLists.add(operationList);
     // todo ot转换后发送给所有用户
     for (final client in clients) {
       final List<Command> operationsToSend = [];

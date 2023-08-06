@@ -22,7 +22,9 @@ class LocalClient extends Client {
   // 通信层
   @override
   Future<void> writeOperations(List<Command> operations) async {
-    final operationList = OperationList(operations, this);
+    final List<Command> copiedOperations = []; // 拷贝list
+    copiedOperations.addAll(operations);
+    final operationList = OperationList(copiedOperations, this);
     await LocalServer().writeOperations(operationList);
   }
 }

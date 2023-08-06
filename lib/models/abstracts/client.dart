@@ -27,7 +27,7 @@ abstract class Client with ChangeNotifier {
   init() {
     controller.addListener(() {
       final currPos = controller.selection.start;
-      debugPrint('currPos $currPos');
+      // debugPrint('currPos $currPos');
       // 不是用户输入的修改
       String currVal = controller.text;
       if (val == currVal) {
@@ -40,7 +40,7 @@ abstract class Client with ChangeNotifier {
         // add value
         String addedValue = currVal.substring(currPos - length, currPos);
         final pos = currPos - length;
-        debugPrint('insert pos: $pos, v: $addedValue');
+        // debugPrint('insert pos: $pos, v: $addedValue');
         command = Command(
           this,
           CommandType.insert,
@@ -51,7 +51,7 @@ abstract class Client with ChangeNotifier {
         );
       } else if (currVal.length < val.length) {
         // delete value
-        debugPrint('delete pos: $currPos, length: ${-length}');
+        // debugPrint('delete pos: $currPos, length: ${-length}');
         command = Command(
           this,
           CommandType.delete,

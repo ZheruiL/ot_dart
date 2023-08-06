@@ -94,7 +94,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                         children: [
                                           const SizedBox(height: 24),
                                           for (final operationList
-                                              in LocalServer().listOperations) ...[
+                                              in LocalServer().operationLists) ...[
                                             const SizedBox(width: 8),
                                             Tooltip(
                                               message: operationList.toString(),

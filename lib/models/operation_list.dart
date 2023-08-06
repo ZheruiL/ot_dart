@@ -10,8 +10,11 @@ class OperationList {
   @override
   String toString() {
     String text = '';
-    for (final op in operations) {
-      text = '$op\n';
+    for (int i = 0; i < operations.length; i++) {
+      text += operations[i].toString();
+      if (i != operations.length - 1) {
+        text += '\n';
+      }
     }
     return text;
   }
